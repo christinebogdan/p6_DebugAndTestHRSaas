@@ -11,6 +11,7 @@ import ErrorPage from "../views/ErrorPage.js";
 import userEvent from "@testing-library/user-event";
 import firestore from "../app/Firestore.js";
 import { ROUTES, ROUTES_PATH } from "../constants/routes";
+import firebase from "../__mocks__/firebase";
 
 const bill = [
   {
@@ -57,7 +58,7 @@ describe("Given I am connected as an employee", () => {
 
   describe("When I am on Bills Page", () => {
     let onNavigate;
-    let billsClass;
+    // let billsClass;
     beforeEach(() => {
       onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
@@ -66,14 +67,6 @@ describe("Given I am connected as an employee", () => {
         value: localStorageMock,
       });
       window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
-
-      // billsClass not needed by ALL
-      billsClass = new Bills({
-        document,
-        onNavigate,
-        firestore,
-        localStorage,
-      });
     });
 
     test("Then bill icon in vertical layout should be highlighted", () => {
@@ -102,17 +95,37 @@ describe("Given I am connected as an employee", () => {
     // check if fails if local Storage is omitted
     test("Then event handling should be set up for the new bill button", () => {
       document.body.innerHTML = BillsUI({ data: bills });
+      const billsClass = new Bills({
+        document,
+        onNavigate,
+        firestore,
+        localStorage,
+      });
+
       const newBillButton = screen.getByTestId("btn-new-bill");
       const handleClickNewBill = jest.fn(billsClass.handleClickNewBill);
+      // DOESNT THIS ADD A 2ND EVENT LISTENER TO THE BUTTON?
       newBillButton.addEventListener("click", handleClickNewBill);
       userEvent.click(newBillButton);
       expect(handleClickNewBill).toHaveBeenCalled();
+
+      // WHY DOES THIS NOT WORK
+      // billsClass.handleClickNewBill = jest.fn();
+      // const newBillButton = screen.getByTestId("btn-new-bill");
+      // console.log(newBillButton);
+      // userEvent.click(newBillButton);
+      // expect(billsClass.handleClickNewBill).toHaveBeenCalled();
     });
 
     // test Dashboard.js als Vorlage
     test("Then all event handling should be set up for the eye icons", () => {
-      const html = BillsUI({ data: bill });
-      document.body.innerHTML = html;
+      document.body.innerHTML = BillsUI({ data: bill });
+      const billsClass = new Bills({
+        document,
+        onNavigate,
+        firestore,
+        localStorage,
+      });
       const handleClickIconEye = jest.fn(billsClass.handleClickIconEye);
       const eye = screen.getByTestId("icon-eye");
       eye.addEventListener("click", (e) => handleClickIconEye(eye));
@@ -135,8 +148,13 @@ describe("Given I am connected as an employee", () => {
     // moved this inside the previous describe to get the beforeEach setup
     describe("When I click on the eye icon of a bill", () => {
       test("Then it should show the bill in a modal", () => {
-        const html = BillsUI({ data: bill });
-        document.body.innerHTML = html;
+        document.body.innerHTML = BillsUI({ data: bill });
+        const billsClass = new Bills({
+          document,
+          onNavigate,
+          firestore,
+          localStorage,
+        });
         // tests Dahsboard.js als Vorlage
         const handleClickIconEye = jest.fn(billsClass.handleClickIconEye);
         const eye = screen.getByTestId("icon-eye");
@@ -148,6 +166,37 @@ describe("Given I am connected as an employee", () => {
         // can I do this with getAllByText?
         expect(modal).toBeTruthy();
       });
+    });
+  });
+});
+
+// GET BILLS Integration Test
+describe("Given I am a user connected as Employee", () => {
+  describe("When I navigate to Bills Overview", () => {
+    const getSpy = jest.spyOn(firebase, "get");
+
+    test("fetches bills from mock API GET", async () => {
+      const bills = await firebase.get();
+      expect(getSpy).toHaveBeenCalledTimes(1);
+      expect(bills.data.length).toBe(4);
+    });
+    test("fetches bills from an API and fails with 404 message error", async () => {
+      firebase.get.mockImplementationOnce(() => {
+        Promise.reject(new Error("Error 404"));
+      });
+      const html = BillsUI({ error: "Error 404" });
+      document.body.innerHTML = html;
+      const message = await screen.getByText(/Error 404/);
+      expect(message).toBeTruthy();
+    });
+    test("fetches messages from an API and fails with 500 message error", async () => {
+      firebase.get.mockImplementationOnce(() =>
+        Promise.reject(new Error("Error 500"))
+      );
+      const html = BillsUI({ error: "Error 500" });
+      document.body.innerHTML = html;
+      const message = await screen.getByText(/Error 500/);
+      expect(message).toBeTruthy();
     });
   });
 });

@@ -5,6 +5,7 @@ import firestore from "../app/Firestore.js";
 import userEvent from "@testing-library/user-event";
 import { localStorageMock } from "../__mocks__/localStorage";
 import { ROUTES, ROUTES_PATH } from "../constants/routes";
+import firestore from "../app/Firestore.js";
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {

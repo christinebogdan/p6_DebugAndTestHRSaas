@@ -1,13 +1,12 @@
 import { fireEvent, screen } from "@testing-library/dom";
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
-// import firestore from "../app/Firestore.js";
 import userEvent from "@testing-library/user-event";
 import { localStorageMock } from "../__mocks__/localStorage";
 import { ROUTES, ROUTES_PATH } from "../constants/routes";
 import { firestore } from "../__mocks__/firestore";
-
-// import firebase from "../__mocks__/firebase.js";
+import firebase from "../__mocks__/firebase";
+import BillsUI from "../views/BillsUI";
 
 const bill = [
   {
@@ -33,6 +32,7 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     let html;
     let onNavigate;
+    let newBill;
     beforeEach(() => {
       html = NewBillUI();
       document.body.innerHTML = html;
@@ -45,18 +45,16 @@ describe("Given I am connected as an employee", () => {
       onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
-    });
-    test("Then submit button in new Bill Form should have Event Handler added", () => {
-      // passes when I comment out firestore
-      const newBill = new NewBill({
+
+      newBill = new NewBill({
         document,
         onNavigate,
         firestore,
         localStorage,
       });
-
+    });
+    test("Then submit button in new Bill Form should have Event Handler added", () => {
       const formNewBill = screen.getByTestId("form-new-bill");
-
       newBill.createBill = jest.fn();
       const handleSubmit = jest.fn(newBill.handleSubmit);
       // fails when (e) => handleSubmit
@@ -67,18 +65,10 @@ describe("Given I am connected as an employee", () => {
     });
 
     test("Then file input field should have Event Handler added", () => {
-      const newBill = new NewBill({
-        document,
-        onNavigate,
-        firestore,
-        localStorage,
-      });
-
       const fileInput = screen.getByTestId("file");
       // why does this fail if I remove [] around new File
       const file = [new File(["hello"], "hello.png", { type: "image/png" })];
       const handleChangeFile = jest.fn(newBill.handleChangeFile);
-      // does this not add a second event Listener to element?
       fileInput.addEventListener("change", handleChangeFile);
       // https://testing-library.com/docs/ecosystem-user-event/#uploadelement-file--clickinit-changeinit-
       userEvent.upload(fileInput, file);
@@ -115,13 +105,6 @@ describe("Given I am connected as an employee", () => {
     }); */
 
     test("then file input should only accept types png, jpg and jpeg", () => {
-      const newBill = new NewBill({
-        document,
-        onNavigate,
-        firestore,
-        localStorage,
-      });
-
       const fileInput = screen.getByTestId("file");
       // const handleChangeFile = jest.fn(newBill.handleChangeFile);
       // fileInput.addEventListener("change", handleChangeFile);
@@ -143,57 +126,85 @@ describe("Given I am connected as an employee", () => {
       expect(firestore.storage.ref).toHaveBeenCalledTimes(3);
       expect(fileInput.value).toBe("");
     });
+
+    test("then on submit, a new bill is created and My Fees page loaded", () => {
+      let spy = jest
+        .spyOn(newBill, "createBill")
+        .mockImplementation(() => "createBill called");
+      const buttonSubmit = screen.getByTestId("form-new-bill");
+      fireEvent.submit(buttonSubmit);
+      expect(newBill.createBill).toHaveBeenCalled();
+
+      const data = [];
+      const loading = false;
+      const error = null;
+      const pathname = ROUTES_PATH["Bills"];
+      const html = ROUTES({ pathname, data, loading, error });
+      document.body.innerHTML = html;
+      expect(screen.getAllByText("My fees")).toBeTruthy();
+    });
   });
 });
 
 // test d'intégration GET
 describe("Given I am a user connected as Employee", () => {
   describe("When I post a New Bill from the New Bill Form", () => {
-    let html;
-    let onNavigate;
-    beforeEach(() => {
-      html = NewBillUI();
-      document.body.innerHTML = html;
-
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
-
-      onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname });
-      };
+    test("posts bill via mock API POST", async () => {
+      const postSpy = jest.spyOn(firebase, "post");
+      const response = await firebase.post();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      // why here toEqual and why not toBe
+      expect(response).toEqual({ 200: "<data_at_path>" });
     });
-
-    // // this.store.collection is not a function
-    // test("posts new bill to firestore bills collection", async () => {
-    //   const newBill = new NewBill({
-    //     document,
-    //     onNavigate,
-    //     firestore,
-    //     localStorage,
-    //   });
-
-    //   newBill.createBill(bill);
-    //   // check if newly posted bill is in collection
-    // });
-    // test("fetches bills from an API and fails with 404 message error", async () => {
-    //   firebase.get.mockImplementationOnce(() =>
-    //     Promise.reject(new Error("Erreur 404"))
-    //   );
-    //   const html = DashboardUI({ error: "Erreur 404" });
-    //   document.body.innerHTML = html;
-    //   const message = await screen.getByText(/Erreur 404/);
-    //   expect(message).toBeTruthy();
-    // });
-    // test("fetches messages from an API and fails with 500 message error", async () => {
-    //   firebase.get.mockImplementationOnce(() =>
-    //     Promise.reject(new Error("Erreur 500"))
-    //   );
-    //   const html = DashboardUI({ error: "Erreur 500" });
-    //   document.body.innerHTML = html;
-    //   const message = await screen.getByText(/Erreur 500/);
-    //   expect(message).toBeTruthy();
-    // });
+    test("posts bill via mock API and fails with 404 message error", async () => {
+      firebase.post.mockImplementationOnce(() => {
+        Promise.reject(new Error("Error 404"));
+      });
+      const html = BillsUI({ error: "Error 404" });
+      document.body.innerHTML = html;
+      const message = screen.getByText(/Error 404/);
+      expect(message).toBeTruthy;
+    });
+    test("posts bill via mock API and fails with 500 message error", async () => {
+      firebase.post.mockImplementationOnce(() => {
+        Promise.reject(new Error("Error 500"));
+      });
+      const html = BillsUI({ error: "Error 500" });
+      document.body.innerHTML = html;
+      const message = screen.getByText(/Error 500/);
+      expect(message).toBeTruthy;
+    });
   });
 });
+
+// let html;
+// let onNavigate;
+// let newBill;
+// beforeEach(() => {
+//   html = NewBillUI();
+//   document.body.innerHTML = html;
+//   Object.defineProperty(window, "localStorage", {
+//     value: localStorageMock,
+//   });
+//   window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
+//   onNavigate = (pathname) => {
+//     document.body.innerHTML = ROUTES({ pathname });
+//   };
+//   newBill = new NewBill({
+//     document,
+//     onNavigate,
+//     firestore,
+//     localStorage,
+//   });
+// });
+// test("posts new bill to firestore bills collection", async () => {
+//   screen.getByTestId("expense-type").value = bill.type;
+//   screen.getByTestId("expense-name").value = bill.name;
+//   screen.getByTestId("amount").value = bill.amount;
+//   screen.getByTestId("datepicker").value = bill.datepicker;
+//   screen.getByTestId("vat").value = bill.vat;
+//   screen.getByTestId("pct").value = bill.pct;
+//   screen.getByTestId("commentary").value = bill.commentary;
+//   const buttonSubmit = screen.getByTestId("form-new-bill");
+//   fireEvent.submit(buttonSubmit);
+// });

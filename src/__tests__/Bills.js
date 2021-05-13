@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/dom";
+import { fireEvent, screen } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
@@ -58,7 +58,6 @@ describe("Given I am connected as an employee", () => {
 
   describe("When I am on Bills Page", () => {
     let onNavigate;
-    // let billsClass;
     beforeEach(() => {
       onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
@@ -73,7 +72,6 @@ describe("Given I am connected as an employee", () => {
       // need storage here for VerticalLaout in BillsUI
       const html = BillsUI({ data: bills });
       document.body.innerHTML = html;
-      //to-do write expect expression DONE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       const billIcon = screen.getByTestId("icon-window");
       expect(billIcon.classList.contains("active-icon")).toBeTruthy;
     });
@@ -91,8 +89,6 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted);
     });
 
-    // can I combine this test with the next one? Can I somehow reset the function call?
-    // check if fails if local Storage is omitted
     test("Then event handling should be set up for the new bill button", () => {
       document.body.innerHTML = BillsUI({ data: bills });
       const billsClass = new Bills({
@@ -110,15 +106,17 @@ describe("Given I am connected as an employee", () => {
       expect(handleClickNewBill).toHaveBeenCalled();
 
       // WHY DOES THIS NOT WORK
-      // billsClass.handleClickNewBill = jest.fn();
+      // let spy = jest
+      //   .spyOn(Bills.prototype, "handleClickNewBill")
+      //   .mockImplementation(() => "handleClickNewBill called");
       // const newBillButton = screen.getByTestId("btn-new-bill");
-      // console.log(newBillButton);
       // userEvent.click(newBillButton);
       // expect(billsClass.handleClickNewBill).toHaveBeenCalled();
     });
 
-    // test Dashboard.js als Vorlage
     test("Then all event handling should be set up for the eye icons", () => {
+      $.fn.modal = jest.fn();
+
       document.body.innerHTML = BillsUI({ data: bill });
       const billsClass = new Bills({
         document,
@@ -126,6 +124,7 @@ describe("Given I am connected as an employee", () => {
         firestore,
         localStorage,
       });
+
       const handleClickIconEye = jest.fn(billsClass.handleClickIconEye);
       const eye = screen.getByTestId("icon-eye");
       eye.addEventListener("click", (e) => handleClickIconEye(eye));
@@ -155,7 +154,6 @@ describe("Given I am connected as an employee", () => {
           firestore,
           localStorage,
         });
-        // tests Dahsboard.js als Vorlage
         const handleClickIconEye = jest.fn(billsClass.handleClickIconEye);
         const eye = screen.getByTestId("icon-eye");
         eye.addEventListener("click", (e) => handleClickIconEye(eye));

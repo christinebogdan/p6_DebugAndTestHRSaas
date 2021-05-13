@@ -32,9 +32,7 @@ export default class {
       .html(
         `<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} /></div>`
       );
-    // condition added by me
-    if (typeof $("#modaleFileAdmin1").modal === "function")
-      $("#modaleFile").modal("show");
+    $("#modaleFile").modal("show");
   };
 
   // no need to cover this function by tests

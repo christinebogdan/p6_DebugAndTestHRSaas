@@ -53,12 +53,11 @@ describe("Given I am connected as an employee", () => {
         localStorage,
       });
     });
+
     test("Then submit button in new Bill Form should have Event Handler added", () => {
       const formNewBill = screen.getByTestId("form-new-bill");
       newBill.createBill = jest.fn();
       const handleSubmit = jest.fn(newBill.handleSubmit);
-      // fails when (e) => handleSubmit
-      // fails when NewBill.js lines 62 and 63 not commented out
       formNewBill.addEventListener("submit", handleSubmit);
       fireEvent.submit(formNewBill);
       expect(handleSubmit).toHaveBeenCalled();
@@ -66,48 +65,15 @@ describe("Given I am connected as an employee", () => {
 
     test("Then file input field should have Event Handler added", () => {
       const fileInput = screen.getByTestId("file");
-      // why does this fail if I remove [] around new File
       const file = [new File(["hello"], "hello.png", { type: "image/png" })];
       const handleChangeFile = jest.fn(newBill.handleChangeFile);
       fileInput.addEventListener("change", handleChangeFile);
-      // https://testing-library.com/docs/ecosystem-user-event/#uploadelement-file--clickinit-changeinit-
       userEvent.upload(fileInput, file);
       expect(handleChangeFile).toHaveBeenCalled();
     });
 
-    /* test.only("Test TEST", () => {
-      const newBill = new NewBill({
-        document,
-        onNavigate,
-        firestore,
-        localStorage,
-      });
-
-      const png = new File(["hello"], "hello.png", { type: "image/png" });
-      const jpg = new File(["hello"], "hello.png", { type: "image/jpg" });
-      const jpeg = new File(["hello"], "hello.png", { type: "image/jpeg" });
-      const validInputs = [png, jpg, jpeg];
-
-      // valid input, should succeed
-      const fileInput = screen.getByTestId("file");
-
-      for (let i = 0; i < validInputs.length; i++) {
-        userEvent.upload(fileInput, validInputs[i]);
-        expect(firestore.storage.ref).toHaveBeenCalledTimes(i + 1);
-      }
-
-      // invalid input
-      const gif = new File(["hello"], "hello.png", { type: "image/gif" });
-      userEvent.upload(fileInput, gif);
-
-      expect(firestore.storage.ref).toHaveBeenCalledTimes(validInputs.length);
-      expect(fileInput.value).toBe("");
-    }); */
-
     test("then file input should only accept types png, jpg and jpeg", () => {
       const fileInput = screen.getByTestId("file");
-      // const handleChangeFile = jest.fn(newBill.handleChangeFile);
-      // fileInput.addEventListener("change", handleChangeFile);
 
       const png = new File(["hello"], "hello.png", { type: "image/png" });
       userEvent.upload(fileInput, png);
@@ -146,14 +112,13 @@ describe("Given I am connected as an employee", () => {
   });
 });
 
-// test d'intégration GET
+// GET Integration Test
 describe("Given I am a user connected as Employee", () => {
   describe("When I post a New Bill from the New Bill Form", () => {
     test("posts bill via mock API POST", async () => {
       const postSpy = jest.spyOn(firebase, "post");
       const response = await firebase.post();
       expect(postSpy).toHaveBeenCalledTimes(1);
-      // why here toEqual and why not toBe
       expect(response).toEqual({ 200: "<data_at_path>" });
     });
     test("posts bill via mock API and fails with 404 message error", async () => {
@@ -176,35 +141,3 @@ describe("Given I am a user connected as Employee", () => {
     });
   });
 });
-
-// let html;
-// let onNavigate;
-// let newBill;
-// beforeEach(() => {
-//   html = NewBillUI();
-//   document.body.innerHTML = html;
-//   Object.defineProperty(window, "localStorage", {
-//     value: localStorageMock,
-//   });
-//   window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
-//   onNavigate = (pathname) => {
-//     document.body.innerHTML = ROUTES({ pathname });
-//   };
-//   newBill = new NewBill({
-//     document,
-//     onNavigate,
-//     firestore,
-//     localStorage,
-//   });
-// });
-// test("posts new bill to firestore bills collection", async () => {
-//   screen.getByTestId("expense-type").value = bill.type;
-//   screen.getByTestId("expense-name").value = bill.name;
-//   screen.getByTestId("amount").value = bill.amount;
-//   screen.getByTestId("datepicker").value = bill.datepicker;
-//   screen.getByTestId("vat").value = bill.vat;
-//   screen.getByTestId("pct").value = bill.pct;
-//   screen.getByTestId("commentary").value = bill.commentary;
-//   const buttonSubmit = screen.getByTestId("form-new-bill");
-//   fireEvent.submit(buttonSubmit);
-// });

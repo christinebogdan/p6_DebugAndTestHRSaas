@@ -3,9 +3,6 @@ import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
 import { localStorageMock } from "../__mocks__/localStorage";
-
-// ADDED BY ME
-
 import LoadingPage from "../views/LoadingPage.js";
 import ErrorPage from "../views/ErrorPage.js";
 import userEvent from "@testing-library/user-event";
@@ -36,7 +33,6 @@ const bill = [
 describe("Given I am connected as an employee", () => {
   describe("When BillsUI is called", () => {
     test("Then Loading Page should be rendered when loading is true", () => {
-      // when this is only test that runs, then BillsUI.js 100% coverage
       const referenceLoadingPage = LoadingPage();
       const result = BillsUI({ data: bills, loading: true });
       expect(result).toEqual(referenceLoadingPage);
@@ -82,40 +78,8 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted);
     });
 
-    // test("Then event handling should be set up for the new bill button", () => {
-    //   document.body.innerHTML = BillsUI({ data: bills });
-    //   onNavigate = jest.fn();
-
-    //   const billsClass = new Bills({
-    //     document,
-    //     onNavigate,
-    //     firestore,
-    //     localStorage,
-    //   });
-
-    //   const newBillButton = screen.getByTestId("btn-new-bill");
-    //   userEvent.click(newBillButton);
-    //   expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
-    // });
-
-    // test("Then all event handling should be set up for the eye icons", () => {
-    //   $.fn.modal = jest.fn();
-    //   document.body.innerHTML = BillsUI({ data: bill });
-
-    //   const billsClass = new Bills({
-    //     document,
-    //     onNavigate,
-    //     firestore,
-    //     localStorage,
-    //   });
-
-    //   const eye = screen.getByTestId("icon-eye");
-    //   userEvent.click(eye);
-    //   expect($.fn.modal).toHaveBeenCalledWith("show");
-    // });
-
     describe("When I click on the New Bill button", () => {
-      test.only("Then it should render the New Bill form", () => {
+      test("Then it should render the New Bill form", () => {
         document.body.innerHTML = BillsUI({ data: bills });
         onNavigate = jest.fn();
 

@@ -34,17 +34,11 @@ const bill = [
 ];
 
 describe("Given I am connected as an employee", () => {
-  // TEST WRITTEN BY ME
   describe("When BillsUI is called", () => {
-    // CHANGE TEST DESCRIPTION TO TEST RESULT - DONE
     test("Then Loading Page should be rendered when loading is true", () => {
+      // when this is only test that runs, then BillsUI.js 100% coverage
       const referenceLoadingPage = LoadingPage();
       const result = BillsUI({ data: bills, loading: true });
-      // const loadingPage = jest.fn(() => {
-      //   return LoadingPage();
-      // });
-      // why here toEqual not toHaveBeenCalled
-      // expect(result).toEqual(loadingPage());
       expect(result).toEqual(referenceLoadingPage);
     });
 
@@ -69,7 +63,6 @@ describe("Given I am connected as an employee", () => {
     });
 
     test("Then bill icon in vertical layout should be highlighted", () => {
-      // need storage here for VerticalLaout in BillsUI
       const html = BillsUI({ data: bills });
       document.body.innerHTML = html;
       const billIcon = screen.getByTestId("icon-window");
@@ -89,53 +82,67 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted);
     });
 
-    test("Then event handling should be set up for the new bill button", () => {
-      document.body.innerHTML = BillsUI({ data: bills });
-      onNavigate = jest.fn();
+    // test("Then event handling should be set up for the new bill button", () => {
+    //   document.body.innerHTML = BillsUI({ data: bills });
+    //   onNavigate = jest.fn();
 
-      const billsClass = new Bills({
-        document,
-        onNavigate,
-        firestore,
-        localStorage,
-      });
+    //   const billsClass = new Bills({
+    //     document,
+    //     onNavigate,
+    //     firestore,
+    //     localStorage,
+    //   });
 
-      const newBillButton = screen.getByTestId("btn-new-bill");
-      userEvent.click(newBillButton);
-      expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
-    });
+    //   const newBillButton = screen.getByTestId("btn-new-bill");
+    //   userEvent.click(newBillButton);
+    //   expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
+    // });
 
-    test("Then all event handling should be set up for the eye icons", () => {
-      $.fn.modal = jest.fn();
-      document.body.innerHTML = BillsUI({ data: bill });
+    // test("Then all event handling should be set up for the eye icons", () => {
+    //   $.fn.modal = jest.fn();
+    //   document.body.innerHTML = BillsUI({ data: bill });
 
-      const billsClass = new Bills({
-        document,
-        onNavigate,
-        firestore,
-        localStorage,
-      });
+    //   const billsClass = new Bills({
+    //     document,
+    //     onNavigate,
+    //     firestore,
+    //     localStorage,
+    //   });
 
-      const eye = screen.getByTestId("icon-eye");
-      userEvent.click(eye);
-      expect($.fn.modal).toHaveBeenCalledWith("show");
-    });
+    //   const eye = screen.getByTestId("icon-eye");
+    //   userEvent.click(eye);
+    //   expect($.fn.modal).toHaveBeenCalledWith("show");
+    // });
 
     describe("When I click on the New Bill button", () => {
-      test("Then it should render the New Bill form", () => {
+      test.only("Then it should render the New Bill form", () => {
+        document.body.innerHTML = BillsUI({ data: bills });
+        onNavigate = jest.fn();
+
+        new Bills({
+          document,
+          onNavigate,
+          firestore,
+          localStorage,
+        });
+
+        const newBillButton = screen.getByTestId("btn-new-bill");
+        userEvent.click(newBillButton);
+        expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
+
         const data = [];
         const loading = false;
         const error = null;
         const pathname = ROUTES_PATH["NewBill"];
-        const html = ROUTES({ pathname, data, loading, error });
-        document.body.innerHTML = html;
+        const newBillHtml = ROUTES({ pathname, data, loading, error });
+        document.body.innerHTML = newBillHtml;
         expect(screen.getAllByText("Send a fee")).toBeTruthy();
       });
     });
 
-    // moved this inside the previous describe to get the beforeEach setup
     describe("When I click on the eye icon of a bill", () => {
       test("Then it should show the bill in a modal", () => {
+        $.fn.modal = jest.fn();
         document.body.innerHTML = BillsUI({ data: bill });
         const billsClass = new Bills({
           document,
@@ -143,14 +150,12 @@ describe("Given I am connected as an employee", () => {
           firestore,
           localStorage,
         });
-        const handleClickIconEye = jest.fn(billsClass.handleClickIconEye);
+
         const eye = screen.getByTestId("icon-eye");
-        eye.addEventListener("click", (e) => handleClickIconEye(eye));
         userEvent.click(eye);
-        expect(handleClickIconEye).toHaveBeenCalled();
+        expect($.fn.modal).toHaveBeenCalledWith("show");
+
         const modal = screen.getAllByText("Fee");
-        // did not work with getByRole("dialog")
-        // can I do this with getAllByText?
         expect(modal).toBeTruthy();
       });
     });

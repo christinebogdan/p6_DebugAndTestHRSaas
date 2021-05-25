@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/dom";
+import { screen } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
@@ -91,6 +91,8 @@ describe("Given I am connected as an employee", () => {
 
     test("Then event handling should be set up for the new bill button", () => {
       document.body.innerHTML = BillsUI({ data: bills });
+      onNavigate = jest.fn();
+
       const billsClass = new Bills({
         document,
         onNavigate,
@@ -99,25 +101,14 @@ describe("Given I am connected as an employee", () => {
       });
 
       const newBillButton = screen.getByTestId("btn-new-bill");
-      const handleClickNewBill = jest.fn(billsClass.handleClickNewBill);
-      // DOESNT THIS ADD A 2ND EVENT LISTENER TO THE BUTTON?
-      newBillButton.addEventListener("click", handleClickNewBill);
       userEvent.click(newBillButton);
-      expect(handleClickNewBill).toHaveBeenCalled();
-
-      // WHY DOES THIS NOT WORK
-      // let spy = jest
-      //   .spyOn(Bills.prototype, "handleClickNewBill")
-      //   .mockImplementation(() => "handleClickNewBill called");
-      // const newBillButton = screen.getByTestId("btn-new-bill");
-      // userEvent.click(newBillButton);
-      // expect(billsClass.handleClickNewBill).toHaveBeenCalled();
+      expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
     });
 
     test("Then all event handling should be set up for the eye icons", () => {
       $.fn.modal = jest.fn();
-
       document.body.innerHTML = BillsUI({ data: bill });
+
       const billsClass = new Bills({
         document,
         onNavigate,
@@ -125,11 +116,9 @@ describe("Given I am connected as an employee", () => {
         localStorage,
       });
 
-      const handleClickIconEye = jest.fn(billsClass.handleClickIconEye);
       const eye = screen.getByTestId("icon-eye");
-      eye.addEventListener("click", (e) => handleClickIconEye(eye));
       userEvent.click(eye);
-      expect(handleClickIconEye).toHaveBeenCalled();
+      expect($.fn.modal).toHaveBeenCalledWith("show");
     });
 
     describe("When I click on the New Bill button", () => {

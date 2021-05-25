@@ -32,12 +32,15 @@ export default class NewBill {
         .then((snapshot) => snapshot.ref.getDownloadURL())
         .then((url) => {
           this.fileUrl = url;
+          console.log(this.fileUrl);
           this.fileName = fileName;
+          console.log(this.fileName);
         });
     } else {
       e.target.value = "";
     }
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
     const email = JSON.parse(localStorage.getItem("user")).email;
@@ -59,6 +62,10 @@ export default class NewBill {
       fileName: this.fileName,
       status: "pending",
     };
+    // if (bill.fileUrl !== null && bill.fileName !== null) {
+    //   this.createBill(bill);
+    //   this.onNavigate(ROUTES_PATH["Bills"]);
+    // }
     this.createBill(bill);
     this.onNavigate(ROUTES_PATH["Bills"]);
   };

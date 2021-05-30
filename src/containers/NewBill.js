@@ -32,9 +32,7 @@ export default class NewBill {
         .then((snapshot) => snapshot.ref.getDownloadURL())
         .then((url) => {
           this.fileUrl = url;
-          console.log(this.fileUrl);
           this.fileName = fileName;
-          console.log(this.fileName);
         });
     } else {
       e.target.value = "";

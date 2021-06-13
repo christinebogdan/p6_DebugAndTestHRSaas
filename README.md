@@ -15,10 +15,46 @@ Aim of the project was to improve the employee's career path and make it more re
 
 ## Objectives
 
-1. **BUG REPORT**: Fix bugs identified in bug report provided by Jest
-2. **BUG HUNT**: The description of several bugs was provided. The described bugs needed to be identified in the code and fixed subsequently.
-3. **UNIT & INTEGRATION TESTS**: The Bills and NewBill files needed to be covered with unit and integration tests.
-4. **E2E TEST**: Write test plan for manual testing of employee path
+### BUG REPORT
+
+- fix bugs identified in bug report provided by Jest
+- bills should be ordered by date from earliest to latest
+- if admin correctly fills out login fields, they should be able to navigate to dashboard page.
+
+### BUG HUNT
+
+#### BUG 1
+
+Being connected as an employee, it's possible to type in the information for a bill and add a receipt as proof, then submit the receipt using one of the following formats: jpg, jpeg, png.
+
+Going to the bills page and clicking on the icon to display the receipt: the modal opens, but there's no image.
+
+Being connected as an admin and clicking on the corresponding ticket, the name of the receipt file is null. The same thing happens when clicking on the icon to display the receipt: the modal opens, but there's no image.
+
+**Expected behavior**:
+
+1. The **modal must display the image**
+2. On the dashboard, the form associated with the ticket should **display the name of the file**
+
+#### BUG 2
+
+Being connected as an admin and opening up a list of tickets (pending, valued, rejected), then select a ticket, then open up a second list, it is not possible to then select a ticket from the first list.
+
+**Expected behavior**: be able to **open up multiple list** and **consult the tickets in each one**.
+
+#### UNIT & INTEGRATION TESTS
+
+1. views/Bills component: increase coverage to 100%
+2. container/Bills component:
+   - cover all statements except back-end firebase calls
+   - add GET Bills integration test
+3. container/NewBill component:
+   - cover all statements except back-end firebase calls
+   - add POST NewBill integration test
+
+#### E2E TEST
+
+Write an **E2E test plan for the employee flow**. This plan must contain all possible scenarios and adhere to the standard form.
 
 ## Requirements
 
@@ -31,6 +67,8 @@ Aim of the project was to improve the employee's career path and make it more re
 
 - write a mock to replace firestore functionality
 - apply Jest spyOn functionality
+
+<hr>
 
 ## How to run the App locally
 

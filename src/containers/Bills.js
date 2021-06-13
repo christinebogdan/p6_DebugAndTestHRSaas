@@ -27,7 +27,7 @@ export default class {
 
   handleClickIconEye = (icon) => {
     const billUrl = icon.getAttribute("data-bill-url");
-    const imgWidth = Math.floor($("#modaleFile").width() * 0.5);
+    const imgWidth = Math.floor($("#modaleFile").width() * 0.3);
     $("#modaleFile")
       .find(".modal-body")
       .html(

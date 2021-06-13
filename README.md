@@ -44,7 +44,7 @@ Being connected as an admin and opening up a list of tickets (pending, valued, r
 
 - be able to **open up multiple list** and **consult the tickets in each one**.
 
-#### UNIT & INTEGRATION TESTS
+### UNIT & INTEGRATION TESTS
 
 1. views/Bills component: increase coverage to 100%
 2. container/Bills component:
@@ -54,7 +54,7 @@ Being connected as an admin and opening up a list of tickets (pending, valued, r
    - cover all statements except back-end firebase calls
    - add POST NewBill integration test
 
-#### E2E TEST
+### E2E TEST
 
 Write an **E2E test plan for the employee flow**. This plan must contain all possible scenarios and adhere to the standard form.
 

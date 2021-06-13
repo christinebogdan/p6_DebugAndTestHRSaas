@@ -32,10 +32,6 @@ Aim of the project was to improve the employee's career path and make it more re
 - write a mock to replace firestore functionality
 - apply Jest spyOn functionality
 
-## Demo
-
-[Link to website](https://christinebogdan.github.io/p5_RecipeSearchEngine/)
-
 ## How to run the App locally
 
 _clone the project_

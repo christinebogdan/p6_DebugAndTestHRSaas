@@ -33,14 +33,16 @@ Being connected as an admin and clicking on the corresponding ticket, the name o
 
 **Expected behavior**:
 
-1. The **modal must display the image**
-2. On the dashboard, the form associated with the ticket should **display the name of the file**
+- the **modal must display the image**
+- on the dashboard, the form associated with the ticket should **display the name of the file**
 
 #### BUG 2
 
 Being connected as an admin and opening up a list of tickets (pending, valued, rejected), then select a ticket, then open up a second list, it is not possible to then select a ticket from the first list.
 
-**Expected behavior**: be able to **open up multiple list** and **consult the tickets in each one**.
+**Expected behavior**:
+
+- be able to **open up multiple list** and **consult the tickets in each one**.
 
 #### UNIT & INTEGRATION TESTS
 

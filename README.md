@@ -20,24 +20,6 @@ Aim of the project was to improve the employee's career path and make it more re
 3. **UNIT & INTEGRATION TESTS**: The Bills and NewBill files needed to be covered with unit and integration tests.
 4. **E2E TEST**: Write test plan for manual testing of employee path
 
-#### Preparation
-
-- **feature Investigation Form** on the main search algorithm to compare the two search algorithms developed and to indicate which is the recommended choice.
-- **test performance** and determine # of operations per second
-- UML **Activity Diagrams** for the core search algorithms
-- UML **Activity Diagram** for the entire search functionality including main serach and keyword search
-
-Details:
-
-- The search must be able to be done **via the main field** or **via the tags**
-  (ingredients, utensils or device)
-- The main search begins when the **user enters 3 characters** in the search bar
-- The search is **updated for each new character** entered
-- The main search **displays** the first **results as soon as possible**
-- The ingredients, utensils and device fields of the **advanced search** only
-  suggest recipes from those present on the page
-- **Search returns** must be an **intersection of results**. If tags "coconut" and "chocolate" are added to ingredients, results should show only recipes that have both coconut and chocolate
-
 ## Requirements
 
 - entirely cover Bills and NewBill files with tests
